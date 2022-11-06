@@ -7,12 +7,30 @@ services:
             args:
                 - GO_VERSION=${GO_VERSION}
         restart: always
+        container_name: ${CONTAINER_PREFIX_NAME}_go
         stdin_open: true
         tty: true
         working_dir: /go/project
         volumes:
           - ${SITE_PATH}:/go/project
         ports:
-            - "8080:8080"
+            - "${PORT_GO}:8080"
+        depends_on:
+            - "mysql"
+    mysql:
+        build:
+            context: ./dockerFile/mysql
+            args:
+                - MYSQL_VERSION=${MYSQL_VERSION}
+        restart: always
+        container_name: ${CONTAINER_PREFIX_NAME}_mysql
+        environment:
+            MYSQL_ALLOW_EMPTY_PASSWORD: true
+            MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+            TZ : Asia/Taipei
+        expose:
+            - "3306"
+        ports:
+            - "${PORT_MYSQL}:3306"
 
 
